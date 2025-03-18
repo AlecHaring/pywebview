@@ -70,6 +70,7 @@ DRAG_REGION_SELECTOR = '.pywebview-drag-region'
 DEFAULT_HTTP_PORT = 42001
 
 settings = ImmutableDict({
+    'ALLOW_CLIPBOARD_ACCESS': True,
     'ALLOW_DOWNLOADS': False,
     'ALLOW_FILE_URLS': True,
     'OPEN_EXTERNAL_LINKS_IN_BROWSER': True,
@@ -429,4 +430,3 @@ def screens() -> list[Screen]:
 
     screens = guilib.get_screens()
     return screens
-
