@@ -218,6 +218,12 @@ class EdgeChrome:
     def on_certificate_error(self, _, args):
         args.set_Action(CoreWebView2ServerCertificateErrorAction.AlwaysAllow)
 
+    def on_permission_requested(self, _, args):
+        if (args.PermissionKind == args.PermissionKind.ClipboardRead
+            and webview_settings['ALLOW_CLIPBOARD_ACCESS']
+        ):
+            args.State = args.State.Allow
+
     def on_script_notify(self, _, args):
         try:
             return_value = args.get_WebMessageAsJson()
@@ -276,6 +282,8 @@ class EdgeChrome:
 
         if _state['ssl'] or webview_settings['IGNORE_SSL_ERRORS']:
             sender.CoreWebView2.ServerCertificateErrorDetected += self.on_certificate_error
+
+        sender.CoreWebView2.PermissionRequested += self.on_permission_requested
 
         sender.CoreWebView2.DownloadStarting += self.on_download_starting
 

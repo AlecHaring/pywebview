@@ -128,6 +128,7 @@ settings = ImmutableDict(
         'IGNORE_SSL_ERRORS': False,
         'SHOW_DEFAULT_MENUS': True,
         'WEBVIEW2_RUNTIME_PATH': None,
+        'ALLOW_CLIPBOARD_ACCESS': True
     }
 )
 

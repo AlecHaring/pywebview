@@ -660,6 +660,10 @@ class BrowserView:
         if _state['debug']:
             config.preferences().setValue_forKey_(True, 'developerExtrasEnabled')
 
+        if webview_settings['ALLOW_CLIPBOARD_ACCESS']:
+            config.preferences().setValue_forKey_(True, 'javaScriptCanAccessClipboard')
+            config.preferences().setValue_forKey_(True, 'DOMPasteAllowed')
+
         self.js_bridge = BrowserView.JSBridge.alloc().initWithObject_(window)
         config.userContentController().addScriptMessageHandler_name_(self.js_bridge, 'jsBridge')
 
