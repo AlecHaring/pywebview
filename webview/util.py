@@ -250,6 +250,7 @@ def js_bridge_call(window: Window, func_name: str, param: Any, value_id: str) ->
     """
 
     def _call():
+        exception = None
         try:
             result = func(*func_params)
             result = json.dumps(result).replace('\\', '\\\\').replace("'", "\\'")
@@ -259,10 +260,15 @@ def js_bridge_call(window: Window, func_name: str, param: Any, value_id: str) ->
             error = {'message': str(e), 'name': type(e).__name__, 'stack': traceback.format_exc()}
             result = json.dumps(error).replace('\\', '\\\\').replace("'", "\\'")
             retval = f"{{isError: true, value: '{result}'}}"
+            exception = e
 
         window.evaluate_js(
             f'window.pywebview._returnValuesCallbacks["{func_name}"]["{value_id}"]({retval})'
         )
+
+        if exception is not None:
+            # raise after notifying JS so tools like Sentry can catch the exception
+            raise exception
 
     def get_nested_attribute(obj: object, attr_str: str):
         attributes = attr_str.split('.')
