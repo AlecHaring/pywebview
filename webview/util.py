@@ -241,13 +241,14 @@ def js_bridge_call(window: Window, func_name: str, param: Any, value_id: str) ->
             result = func(*func_params)
             result = json.dumps(result).replace('\\', '\\\\').replace("'", "\\'")
             code = f'window.pywebview._returnValues["{func_name}"]["{value_id}"] = {{value: \'{result}\'}}'
+            window.evaluate_js(code)
         except Exception as e:
             logger.error(traceback.format_exc())
             error = {'message': str(e), 'name': type(e).__name__, 'stack': traceback.format_exc()}
             result = json.dumps(error).replace('\\', '\\\\').replace("'", "\\'")
             code = f'window.pywebview._returnValues["{func_name}"]["{value_id}"] = {{isError: true, value: \'{result}\'}}'
-
-        window.evaluate_js(code)
+            window.evaluate_js(code)
+            raise  # raise at the end so tools like Sentry can catch exception
 
     def get_nested_attribute(obj: object, attr_str: str):
         attributes = attr_str.split('.')
@@ -510,4 +511,3 @@ def css_to_camel(css_case_string: str) -> str:
 
 def android_jar_path() -> str:
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib', 'pywebview-android.jar')
-
