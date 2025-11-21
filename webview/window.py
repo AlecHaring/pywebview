@@ -516,6 +516,16 @@ class Window:
         return self.gui.create_confirmation_dialog(title, message, self.uid)
 
     @_shown_call
+    def create_notification(self, title: str, subtitle: str, message: str) -> None:
+        """
+        Create a notification
+        :param title: Notification title
+        :param subtitle: Notification subtitle
+        :param message: Notification message
+        """
+        self.gui.create_notification(title, subtitle, message, self.uid)
+
+    @_shown_call
     def create_file_dialog(
         self,
         dialog_type: int = 10,

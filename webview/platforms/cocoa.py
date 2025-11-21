@@ -58,6 +58,7 @@ class BrowserView:
     app = AppKit.NSApplication.sharedApplication()
     app.setActivationPolicy_(0)
     current_menu = None
+    notification_delegate = None
 
     cascade_loc = Foundation.NSMakePoint(100.0, 0.0)
 
@@ -69,6 +70,10 @@ class BrowserView:
             return Foundation.YES if should_close else Foundation.NO
 
         def applicationSupportsSecureRestorableState_(self, app):
+            return Foundation.YES
+
+    class NotificationDelegate(AppKit.NSObject):
+        def userNotificationCenter_shouldPresentNotification_(self, center, notification):
             return Foundation.YES
 
     class WindowHost(AppKit.NSWindow):
@@ -545,6 +550,14 @@ class BrowserView:
             super(BrowserView.WebKitHost, self).keyDown_(event)
 
     def __init__(self, window):
+        if BrowserView.notification_delegate is None:
+            BrowserView.notification_delegate = (
+                BrowserView.NotificationDelegate.alloc().init().retain()
+            )
+            AppKit.NSUserNotificationCenter.defaultUserNotificationCenter().setDelegate_(
+                BrowserView.notification_delegate
+            )
+
         BrowserView.instances[window.uid] = self
         self.uid = window.uid
         self.pywebview_window = window
@@ -763,6 +776,17 @@ class BrowserView:
 
     def set_title(self, title):
         AppHelper.callAfter(self.window.setTitle_, title)
+
+    def create_notification(self, title, subtitle, message):
+        notification = AppKit.NSUserNotification.alloc().init()
+        notification.setTitle_(title)
+        notification.setSubtitle_(subtitle)
+        notification.setInformativeText_(message)
+        notification.setSoundName_(AppKit.NSUserNotificationDefaultSoundName)
+
+        AppKit.NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification_(
+            notification
+        )
 
     def toggle_fullscreen(self):
         def toggle():
@@ -1435,6 +1459,12 @@ def create_confirmation_dialog(title, message, uid):
     semaphore.acquire()
 
     return result
+
+
+def create_notification(title, subtitle, message, uid):
+    i = BrowserView.instances.get(uid)
+    if i:
+        i.create_notification(title, subtitle, message)
 
 
 def create_file_dialog(dialog_type, directory, allow_multiple, save_filename, file_types, uid):

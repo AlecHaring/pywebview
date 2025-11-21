@@ -26,7 +26,7 @@ clr.AddReference('System.Reflection')
 import System.Windows.Forms as WinForms  # noqa: E402
 from Microsoft.Win32 import SystemEvents  # noqa: E402
 from System import Array, Environment, Func, Int32, IntPtr, Object, Type, UInt32  # noqa: E402
-from System.Drawing import Color, ColorTranslator, Icon, Point, Size, SizeF  # noqa: E402
+from System.Drawing import Color, ColorTranslator, Icon, Point, Size, SizeF, SystemIcons  # noqa: E402
 from System.Reflection import Assembly, BindingFlags  # noqa: E402
 from System.Threading import ApartmentState, Thread, ThreadStart  # noqa: E402
 
@@ -614,6 +614,26 @@ class BrowserView:
 
             self.Invoke(Func[Type](_restore))
 
+        def create_notification(self, title, subtitle, message):
+            def _create_notification():
+                notification = WinForms.NotifyIcon()
+                notification.Icon = SystemIcons.Information
+                notification.Visible = True
+
+                def dispose(sender, args):
+                    notification.Visible = False
+                    notification.Dispose()
+
+                notification.BalloonTipClosed += dispose
+                notification.BalloonTipClicked += dispose
+
+                full_message = f'{subtitle}\n{message}' if subtitle else message
+                notification.BalloonTipTitle = title
+                notification.BalloonTipText = full_message
+                notification.ShowBalloonTip(10)
+
+            self.Invoke(Func[Type](_create_notification))
+
     @staticmethod
     def alert(message):
         WinForms.MessageBox.Show(str(message))
@@ -792,6 +812,12 @@ def create_confirmation_dialog(title, message, uid):
 
     result = WinForms.MessageBox.Show(message, title, WinForms.MessageBoxButtons.OKCancel)
     return result == WinForms.DialogResult.OK
+
+
+def create_notification(title, subtitle, message, uid):
+    i = BrowserView.instances.get(uid)
+    if i:
+        i.create_notification(title, subtitle, message)
 
 
 def create_file_dialog(dialog_type, directory, allow_multiple, save_filename, file_types, uid):
