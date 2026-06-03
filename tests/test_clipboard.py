@@ -2,6 +2,7 @@ import sys
 import threading
 
 import pytest
+
 import webview
 
 from .util import run_test
@@ -35,23 +36,26 @@ def async_clipboard_test(window):
     event = threading.Event()
 
     def callback(val: dict):
-        result_container["result"] = val
+        result_container['result'] = val
         event.set()
 
-    window.evaluate_js("(async () => await asyncCopy())()", callback)
+    window.evaluate_js('(async () => await asyncCopy())()', callback)
 
     # Wait up to 5 seconds for the JS callback to complete.
     event.wait(timeout=5)
-    result = result_container.get("result")
-    assert result and result.get("success"), (
-        f"Clipboard copy failed: {result.get('error') if result else 'no result'}"
-    )
+    result = result_container.get('result')
+    assert result and result.get(
+        'success'
+    ), f"Clipboard copy failed: {result.get('error') if result else 'no result'}"
 
 
-@pytest.mark.skipif(sys.platform != "darwin", reason="Test only applicable on macOS")
+@pytest.mark.skipif(sys.platform != 'darwin', reason='Test only applicable on macOS')
 def test_clipboard():
-    webview.settings["ALLOW_CLIPBOARD_ACCESS"] = True
-    window = webview.create_window("Clipboard Test",
-                                   html="",  # need to load html after because clipboard only available on secure origin
-                                   width=800, height=600)
+    webview.settings['ALLOW_CLIPBOARD_ACCESS'] = True
+    window = webview.create_window(
+        'Clipboard Test',
+        html='',  # need to load html after because clipboard only available on secure origin
+        width=800,
+        height=600,
+    )
     run_test(webview, window, async_clipboard_test)

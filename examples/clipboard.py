@@ -1,5 +1,6 @@
 import webview
 
+
 def clipboard_test_app():
     return """
     <!DOCTYPE html>
@@ -77,7 +78,10 @@ def clipboard_test_app():
     </html>
     """
 
+
 if __name__ == '__main__':
     webview.settings['ALLOW_CLIPBOARD_ACCESS'] = True
-    window = webview.create_window('Clipboard Testing App', html=clipboard_test_app(), width=900, height=700)
+    window = webview.create_window(
+        'Clipboard Testing App', html=clipboard_test_app(), width=900, height=700
+    )
     webview.start(lambda: window.load_html(clipboard_test_app()), debug=True)

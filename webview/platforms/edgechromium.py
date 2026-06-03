@@ -219,7 +219,8 @@ class EdgeChrome:
         args.set_Action(CoreWebView2ServerCertificateErrorAction.AlwaysAllow)
 
     def on_permission_requested(self, _, args):
-        if (args.PermissionKind == args.PermissionKind.ClipboardRead
+        if (
+            args.PermissionKind == args.PermissionKind.ClipboardRead
             and webview_settings['ALLOW_CLIPBOARD_ACCESS']
         ):
             args.State = args.State.Allow
