@@ -305,7 +305,7 @@ def js_bridge_call(window: Window, func_name: str, param: Any, value_id: str) ->
                 _dnd_state['paths'].remove(path[0])
 
         for handler in element._event_handlers.get(event['type'], []):
-            thread = Thread(target=handler, args=(event,))
+            thread = Thread(target=handler, args=(event,), daemon=True)
             thread.start()
 
         return
@@ -337,7 +337,7 @@ def js_bridge_call(window: Window, func_name: str, param: Any, value_id: str) ->
     if func is not None:
         try:
             func_params = param
-            thread = Thread(target=_call)
+            thread = Thread(target=_call, daemon=True)
             thread.start()
         except Exception:
             logger.exception('Error occurred while evaluating function %s', func_name)
