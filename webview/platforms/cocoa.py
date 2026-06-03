@@ -600,6 +600,15 @@ class BrowserView:
         )
         self.pywebview_window.native = self.window
 
+        # Opt out of macOS window state restoration ("Persistent UI"). The app
+        # creates its own windows on every launch with explicit geometry, so it
+        # never relies on AppKit restoring them. Leaving restoration on means a
+        # window resize (setFrame:) schedules an asynchronous NSPersistentUIManager
+        # flush that can fire while the window is being torn down, crashing in
+        # -[NSWindow _windowCanBeRestored] (EXC_BREAKPOINT). Disabling it removes
+        # every pywebview window from that flush, which is the cure.
+        self.window.setRestorable_(False)
+
         self.window.focus = window.focus
         self.window.setTitle_(window.title)
         self.window.setMinSize_(AppKit.NSSize(window.min_size[0], window.min_size[1]))
