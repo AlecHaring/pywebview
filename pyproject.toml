@@ -1,9 +1,10 @@
 [build-system]
-requires = ["setuptools", "setuptools_scm[toml]"]
+requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pywebview"
+version = "6.3"
 authors = [{ name = "Roman Sirokov", email = "roman@flowrl.com" }]
 description = "Build GUI for your Python program with JavaScript, HTML, and CSS"
 keywords = ["gui", "webkit", "html", "web"]
@@ -42,7 +43,6 @@ dependencies = [
     "bottle",
     "typing_extensions"
 ]
-dynamic = ["version"]
 
 [project.optional-dependencies]
 cef = ["cefpython3"]
@@ -121,10 +121,6 @@ packages = [
 "webview.lib" = ["**/*.dll", "**/*.jar"]
 "webview.js" = ["**/*.js"]
 "webview" = ["py.typed"]
-
-[tool.setuptools_scm]
-write_to = "webview/_version.py"
-
 
 [project.entry-points."pyinstaller40"]
 hook-dirs = "webview.__pyinstaller:get_hook_dirs"
